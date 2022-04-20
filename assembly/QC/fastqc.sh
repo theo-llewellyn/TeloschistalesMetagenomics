@@ -5,4 +5,4 @@ module load java fastqc
 
 cd $PBS_O_WORKDIR
 
-fastqc raw_reads_1P.fq.gz raw_reads_2P.fq.gz -t 8
+fastqc ACCESSION_1P.fq.gz ACCESSION_2P.fq.gz -t 8
