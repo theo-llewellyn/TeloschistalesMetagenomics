@@ -95,7 +95,7 @@ Once anthraquinone BGCFs have been identified from BiG-SCAPE output the orthofin
 3. `qsub extract_PANTHER.sh` extract PANTHER annotations from interpro output
 
 ### 6.2 PT domain analysis
-The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3). The orthogroup of interest may also contain non-anthraqunone PKSs, therefore we need to make a note of which ones are putative anthraquinone PKSs by hovering over the relevant PKSs in the BiG-SCAPE PKSI html file. The names of the putative anthraquinone PKSs need to be saved into a file called `OG12_anthraquinone_headers.txt`
+The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3). The orthogroup of interest may also contain non-anthraqunone PKSs, therefore we need to make a note of which ones are putative anthraquinone PKSs by hovering over the relevant PKSs in the BiG-SCAPE PKSI html file. The names of the putative anthraquinone PKSs need to be saved into a file called `OG_anthraquinone_headers.txt`
 
 `cd anthraquinones/hmmalign`
 1. `qsub hmm_convert.sh` converts the Pfam seed alignment to an HMM file
