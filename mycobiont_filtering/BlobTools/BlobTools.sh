@@ -1,6 +1,5 @@
 #PBS -l walltime=03:00:00
 #PBS -l select=1:ncpus=16:mem=124gb
-#PBS -J 1-10
 
 module load anaconda3/personal
 source activate blobtools
