@@ -93,6 +93,6 @@ Once anthraquinone BGCFs have been identified from BiG-SCAPE output the orthofin
 3. `qsub extract_PANTHER.sh` extract PANTHER annotations from interpro output
 
 ### 6.2 PT domain analysis
-The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded here[https://pfam.xfam.org/family/PF14765#tabview=tab3]
+The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3)
 `cd anthraquinones/hmmalign`
 1. `qsub 
