@@ -8,6 +8,9 @@ cd $PBS_O_WORKDIR
 
 mkdir diamond_output
 
+#do following line if need to convert uniprotdb into diamond db format
+diamond makedb --in uniref90.fasta.gz -d uniref90.fasta.dmnd
+
 #blast genome assembly against the uniprot90
 diamond blastx \
    --index-chunks 1 \
