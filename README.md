@@ -61,6 +61,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 ### 3.2 Gene Prediction
 `cd annotation_orthology/gene_prediction`
 1. `qsub funnanotate_masked.sh` predicts genes from sorted, masked genome using funnanotate. This uses ESTs and proteins from Xanthoria parietina, Cladonia grayii and Usnea florida as evidence downloaded from JGI mycocosm.
+2. `qsub rename_downloaded_proteins.sh` renames the protein headers from assemblies downloaded from NCBI/JGI so that they are unique between proteomes
 
 ### 3.3 Orthology inference
 `cd annotation_orthology/orthology`
