@@ -102,7 +102,7 @@ The following steps combine the PT domains from our anthraquinone PKSs with the 
 2. `qsub pull_anthraquinone_pks.sh` extract just anthraquinone PKSs from orthogroup of interest
 3. `qsub blastp.sh` extracts PT domains from PKSs using aptA Aspergillus PT domain as a query
 4. `qsub convert_2_fasta.sh` extract PT coordinates from blastp and convert to a fast file [bedtools]()
-5. The above two steps are repeated for the Liu et al. (2015) sequences and then combined into a single file of PT domains with our putative anthraquinone PT domains
+5. The above two steps are repeated for the Liu et al. (2015) sequences and then combined into a single file of PT domains with our putative anthraquinone PT domains called `OG_anth_Liu_PF14765.out`
 6. `qsub hmmalign.sh` uses (this)[https://github.com/reubwn/scripts/blob/master/hmmsearch-easy.pl] script from Reuben Nowell to align the PT domains to those in the Pfam seed alignment `PF14765_seed.txt`
 7. `qsub iqtree_hmmalign.sh` uses IQTree to build a ML tree from the clustal alignment
 8. `qsub hmmalign_taxify.sh` uses (this)[https://github.com/reubwn/scripts/blob/master/taxify_uniprot_treefile.pl] script from Reuben Nowell to taxify the output. Requires the Uniref90 taxlist used for BlobTools.
