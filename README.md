@@ -47,7 +47,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 2. `qsub seqkit_bbmap.sh` extract contigs based on headers file from previous step using SeqKit and then pulls reads which map to those contigs using bbmap
 
 ### 2.4 Mycobiont assembly cleaning
-`cd cd mycobiont_filtering/cleaning`
+`cd mycobiont_filtering/cleaning`
 1. `qsub redundans.sh` uses redundans to remove redundant contifs, scaffold and close gaps
 
 ## 3. Annotation and orthology inference
@@ -70,18 +70,18 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 `cd phylogenomcis`
 1. `Rscript Orthogroups_75percent.R` uses the `Orthogroups.GeneCount.tsv` file from OrthoFinder to extract a list of single copy orthologues present in at least 75% of taxa
 2. `qsub extract_75_orthogroups.sh` pull 75% orthogroups and copy to new directory
-3. `qsub mafft_trimAL_loop.sh` uses MAFFT to align each orthogroup and TrimAL to remove ambiguous regions
+3. `qsub mafft_trimAL_loop.sh` uses (MAFFT)[] to align each orthogroup and (TrimAL)[] to remove ambiguous regions
 4. `qsub edit_protein_headers.sh` removes trailing information on protein headers so that only the species name remains. This is needed in order for tree building tools to recognise which sequences belong to the same genome
-5. `qsub iqtree.sh` produces a concatenated maximum likelihood tree from all orthgroups alignments and also individual orthogroup 'gene trees' for each orthogroup separately
+5. `qsub iqtree.sh` produces a concatenated maximum likelihood tree from all orthgroups alignments and also individual orthogroup 'gene trees' for each orthogroup separately using (IQTree)[]
 6. `qsub iqtree_gfc.sh` calculates gene- and site-concordance factors using IQTree
-7. `qsub astral.sh` produces coalescent-based species tree using ASTRAL
+7. `qsub astral.sh` produces coalescent-based species tree using (ASTRAL)[]
 
 ## 5. Secondary metabolite biosynthetic gene cluster (BGC) analysis
 `cd SMGC_analysis`
-1. `qsub antismash.sh` predicts BGCs from funnanotate predictions using antismash
+1. `qsub antismash.sh` predicts BGCs from funnanotate predictions using (antismash)[]
 2. `qsub edit_antismash_gbks.sh` edits the antismash .gbk files so that each one includes the name of the genome it came from. This prevent identical named files from being removed in the next stage
 3. `cp *.gbk antismash_Leca45T_gbks` copies renamed .gbks from all genomes into a new directory
-4. `qsub bigscape.sh` identifies BGC families using BiG-SCAPE
+4. `qsub bigscape.sh` identifies BGC families using (BiG-SCAPE)[]
 5. `Rscript BGC_cluster_analysis.r` Mantel tests and PCoA of BGC data in R
 
 ## 6. Anthraquinone BGC analysis
@@ -93,6 +93,14 @@ Once anthraquinone BGCFs have been identified from BiG-SCAPE output the orthofin
 3. `qsub extract_PANTHER.sh` extract PANTHER annotations from interpro output
 
 ### 6.2 PT domain analysis
-The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3)
+The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3). The orthogroup of interest may also contain non-anthraqunone PKSs, therefore we need to make a note of which ones are putative anthraquinone PKSs by hovering over the relevant PKSs in the BiG-SCAPE PKSI html file. The names of the putative anthraquinone PKSs need to be saved into a file called `OG12_anthraquinone_headers.txt`
+
 `cd anthraquinones/hmmalign`
-1. `qsub 
+1. `qsub hmm_convert.sh` converts the Pfam seed alignment to an HMM file
+2. `qsub pull_anthraquinone_pks.sh` extract just anthraquinone PKSs from orthogroup of interest
+3. `qsub blastp.sh` extracts PT domains from PKSs using aptA Aspergillus PT domain as a query
+4. `qsub convert_2_fasta.sh` extract PT coordinates from blastp and convert to a fast file [bedtools]()
+5. The above two steps are repeated for the Liu et al. (2015) sequences and then combined into a single file of PT domains with our putative anthraquinone PT domains
+6. `qsub hmmalign.sh` uses (this)[https://github.com/reubwn/scripts/blob/master/hmmsearch-easy.pl] script from Reuben Nowell to align the PT domains to those in the Pfam seed alignment `PF14765_seed.txt`
+7. `qsub iqtree_hmmalign.sh` uses IQTree to build a ML tree from the clustal alignment
+8. `qsub hmmalign_taxify.sh` uses (this)[https://github.com/reubwn/scripts/blob/master/taxify_uniprot_treefile.pl] script from Reuben Nowell to taxify the output. Requires the Uniref90 taxlist used for BlobTools.
