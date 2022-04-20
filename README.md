@@ -35,10 +35,11 @@ Uses a DIAMOND blast of the contigs against the UniRef90 database which can be d
 
 ### 2.2 CONCOCT
 `cd mycobiont_filtering/CONCOCT`
-1. `qsub concoct.sh` bins metagenome contigs into MAGs
-2. `qsub make_cov_gc.sh` makes a coverage and gc_content file from the bbmap output to be used in the following step
-3. `Rscript concoct_mags_plot.r` visualises CONCOCT binning and BlobTools blasts to identify Ascomycota bins. Requires the 'clustering_merged.csv' file in the concoct_output
-4. `cat bin1.fa bin2.fa bin3.fa > Lecanoromycete_MAG.fa` merge potential mycobiont bins into a single file
+1. `qsub bwa_gatk.sh` align reads to contigs using (BWA-mem)[] and convert to .bam with (GATK)[]
+2. `qsub concoct.sh` bins metagenome contigs into MAGs
+3. `qsub make_cov_gc.sh` makes a coverage and gc_content file from the bbmap output to be used in the following step
+4. `Rscript concoct_mags_plot.r` visualises CONCOCT binning and BlobTools blasts to identify Ascomycota bins. Requires the 'clustering_merged.csv' file in the concoct_output
+5. `cat bin1.fa bin2.fa bin3.fa > Lecanoromycete_MAG.fa` merge potential mycobiont bins into a single file
 
 ### 2.3 Blobtools (round 2)
 The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the exact same scripts but replacing the metagenome assembly for `Lecanoromycete_MAG.fa` taking care to change the output file names so as not to overwrite the first round of BlobTools. The results can then be used to remove any remaining non-mycbiont reads as follows
