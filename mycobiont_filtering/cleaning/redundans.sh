@@ -1,6 +1,5 @@
 #PBS -l walltime=24:00:00
 #PBS -l select=1:ncpus=32:mem=124gb
-#PBS -J 1-3
 
 #get name of contigs file
 ACCESSION=NAME_OF_SEQUENCE
