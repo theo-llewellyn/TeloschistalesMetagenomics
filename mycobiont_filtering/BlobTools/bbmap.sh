@@ -16,4 +16,8 @@ bbmap.sh \
  covhist=ACCESSION.sam.covhist
 
 #generate covfile for blobtools
+# (IF MEGAHIT) generate covfile for blobtools and others
+perl -lane 'BEGIN{print "# contig_id\tread_cov\tbase_cov"}if(/#/){next}else{$reads=($F[9]+$F[10]);print join("\t",$F[0],$reads,$F[4])}' ACCESSION.sam.covstats > ACCESSION.sam.cov
+
+# (IF SPADES) generate covfile for blobtools and others
 perl -lane 'BEGIN{print "# contig_id\tread_cov\tbase_cov"}if(/#/){next}else{$reads=($F[6]+$F[7]);print join("\t",$F[0],$reads,$F[1])}' ACCESSION.sam.covstats > ACCESSION.sam.cov
