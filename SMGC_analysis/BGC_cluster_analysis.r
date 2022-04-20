@@ -13,10 +13,13 @@ library(vegan)
 library(fpc)
 library(cluster)
 library(factoextra)
+library(phylobase)
+library(adephylo)
+library(phytools)
 
 
 #load in data
-bgcs <- read.table("BigScape_c0.42_.48_clansoff_Leca45T_round2_output/Network_Annotations_Full.tsv", sep = "\t", header = TRUE, fill  = TRUE)
+bgcs <- read.table("BigScape_c0.4_1_clansoff_Leca45T_output/Network_Annotations_Full.tsv", sep = "\t", header = TRUE, fill  = TRUE)
 
 #remove the MIBiG clusters
 bgcs %>% filter(!grepl('BGC', BGC)) -> filtered_bgcs
@@ -51,12 +54,12 @@ filtered_bgcs <- mutate(filtered_bgcs, Description=recode(Description,
                                                           "Usnochroma carphineum" = "Usnochroma carphinea")) 
 
 #load in data
-pks1_clusters <- read_tsv("BigScape_c0.42_.48_clansoff_Leca45T_round2_output/PKSI_clustering_c0.46.tsv")
-nrps_clusters <- read_tsv("BigScape_c0.42_.48_clansoff_Leca45T_round2_output/NRPS_clustering_c0.46.tsv")
-pks_nrp_hybrids <- read_tsv("BigScape_c0.42_.48_clansoff_Leca45T_round2_output/PKS-NRP_Hybrids_clustering_c0.46.tsv")
-pks_other_clusters <- read_tsv("BigScape_c0.42_.48_clansoff_Leca45T_round2_output/PKSother_clustering_c0.46.tsv")
-Terpene_clusters <- read_tsv("BigScape_c0.42_.48_clansoff_Leca45T_round2_output/Terpene_clustering_c0.46.tsv")
-Other_clusters <- read_tsv("BigScape_c0.42_.48_clansoff_Leca45T_round2_output/Others_clustering_c0.46.tsv")
+pks1_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/PKSI_clustering_c0.46.tsv")
+nrps_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/NRPS_clustering_c0.46.tsv")
+pks_nrp_hybrids <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/PKS-NRP_Hybrids_clustering_c0.46.tsv")
+pks_other_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/PKSother_clustering_c0.46.tsv")
+Terpene_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/Terpene_clustering_c0.46.tsv")
+Other_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/Others_clustering_c0.46.tsv")
 
 #change colname
 pks1_clusters <- rename(pks1_clusters, BGC = `#BGC Name`, Family.Number = `Family Number`)
@@ -75,26 +78,6 @@ detach("package:plyr", unload = TRUE)
 
 #link tbls by BGC column, the nrows drops as it removes any clusters from MiBig
 all_bgcs_linked <- inner_join(x = all_bgc_clusters, y = filtered_bgcs)
-
-#option 2 with taxa as first col all bgcs
-all_bgcs_linked[,c(2,4)] %>% add_column(presence = 1) %>% 
-  pivot_wider(names_from = Family.Number,
-              values_from = presence,
-              values_fn = list(presence = mean),
-              values_fill = 0) %>%
-  column_to_rownames(var="Description") %>%
-  vegdist(method = "jaccard") -> pam_data
-
-
-#pam analysis on distance matrix, set k to number of orders (5) or families (8)
-pam_results <- pam(pam_data, k = 5, diss = TRUE)
-pam_results$data = pam_data
-#plot clusters
-pdf("BGC_Leca45T_pam_2022.pdf", height = 8.3, width = 8.3)
-fviz_cluster(pam_results, repel = TRUE) +
-  guides(fill = guide_legend(title = "cluster", override.aes = aes(label = "")))
-dev.off()
-
 
 
 ##### VEGAN PCoA
@@ -126,7 +109,7 @@ lvl1 <- levels(orders)
 
 set.seed(2308)
 #plot just points
-pdf("FIGURES/BGC_Leca45T_PCoA_wEllipse_2022.pdf", height = 5.5, width = 5.5)
+pdf("BGC_Leca45T_PCoA_wEllipse_2022.pdf", height = 5.5, width = 5.5)
 par(mar = c(4, 4, 1, 1)) 
 plot(pco1$points, type = "n",
      scaling = "symmetric",
@@ -160,6 +143,23 @@ PCoA_plot
 
 dev.off()
 
-png("FIGURES/BGC_Leca45T_PCoA_wEllipse_2022.png", res = 300, width = 2000, height = 2000)
+png("BGC_Leca45T_PCoA_wEllipse_2022.png", res = 300, width = 2000, height = 2000)
 PCoA_plot
 dev.off()
+
+### Mantel tests
+#read tree
+iqtree <- read.tree("IQTree_Leca45T_75p_round2/concord_Leca45T_tAl_concat.renamed.rooted.tree")
+
+#edit tip labels to match matrix
+iqtree$tip.label <- c("Cyanodermella asteris","Diploschistes diacapsis","Lasallia pustulata","Lasallia hispanica","Umbilicaria vellea","Umbilicaria muehlenbergii","Caloplaca aegea","Variospora aurantia","Seirophora lacunosa","Seirophora lacunosa_2", "Seirophora villosa","Caloplaca aetnensis","Caloplaca ligustica","Usnochroma carphinea","Gyalolechia ehrenbergii","Gyalolechia flavorubescens","Letrouitia leprolyta","Flavoplaca oasis","Rusavskia elegans","Xanthoria sp.","Xanthoria sp. (2)","Xanthoria aureola","Xanthoria mediterranea","Xanthoria steineri","Xanthoria parietina","Xanthomendoza fulva","Teloschistes chrysophthalmus","Teloschistes peruviana","Teloschistes flavicans","Letrouitia transgressa_93","Letrouitia transgressa_94","Ramalina intermedia","Ramalina peruviana","Cladonia macilenta","Cladonia metacorallifera","Cladonia rangiferina","Cladonia uncialis","Cladonia grayii","Usnea hakonensis","Usnea florida","Alectoria sarmentosa","Evernia prunastri","Pseudevernia furfuracea","Letharia columbiana","Letharia lupina")
+
+#convert tree to phylogenetic distance matrix
+phylo_dist <- cophenetic.phylo(iqtree)
+
+#convert BGCF matrix into distance matrix using squared euclid distance based on Harmon and Glor
+bgcf_dist_Gower <- vegdist(dissimilarity_input, method = "gower")
+
+#mantel test
+mantel_test_gower <- mantel(phylo_dist, bgcf_dist_Gower)
+mantel_test_gower
