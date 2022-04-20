@@ -7,7 +7,7 @@ source activate seqkit-env
 cd $PBS_O_WORKDIR
 
 #opens the assembly, searches for particular contigs and puts into a new file
-cat ASSEMBLY.fasta | seqkit grep -f ACCESSION_Asco_headers.fa > ACCESSION_Asco_contigs.fa
+cat ASSEMBLY.fasta | seqkit grep -f ACCESSION_concoct_Asco_headers.fa > ACCESSION_Asco_contigs.fa
 
 conda deactivate
 
