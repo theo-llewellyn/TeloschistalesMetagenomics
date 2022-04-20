@@ -5,58 +5,58 @@ All scripts (except .R scripts) were run on the Imperial College London High Per
 
 ## 1. Metagenome Assembly
 ### 1.1 Quality assessment of Illumina reads
-Uses fastq.gz paired end Illumina raw reads. Read trimming requires `TruSeq3-PE-2.fa` for TruSeq Nano Library prep and `NexteraPE-PE.fa` for Nextera XT Library prep. Both .fa adpater files are included in trimmmotatic v0.36 within the adapters directory.
+Uses fastq.gz paired end Illumina raw reads. Read trimming requires `TruSeq3-PE-2.fa` for TruSeq Nano Library prep and `NexteraPE-PE.fa` for Nextera XT Library prep. Both .fa adpater files are included in trimmmotatic v0.36 within the adapters directory.  
 `cd assembly/QC`
-1. `qsub fastqc.sh` assesses raw read quality using FastQC
-2. `qsub trimmomatic.sh` trims low-quality bases and adapters with Trimmomatic
+1. `qsub fastqc.sh` assesses raw read quality using [FastQC](https://github.com/s-andrews/FastQC)
+2. `qsub trimmomatic.sh` trims low-quality bases and adapters with [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)
 3. `qsub fastqc_trimmed.sh` assesses read quality post-trimming
 
 ### 1.2 Metagenome assembly
 `cd assembly/metagenome_assembly`
-1. `qsub megahit.sh` metagenome assembly using MEGAHIT
-2. `qsub metaspades.sh` metagenome assembly using MetaSPAdes
+1. `qsub megahit.sh` metagenome assembly using [MEGAHIT](https://github.com/voutcn/megahit)
+2. `qsub metaspades.sh` metagenome assembly using [MetaSPAdes](https://github.com/ablab/spades)
 
 ### 1.3 Metagenome assessment
 `cd assembly/assessment`
-1. `qsub quast.sh` assembly contiguity using QUAST
-2. `qsub busco.sh` assembly completeness using BUSCO and the Ascomycota dataset
+1. `qsub quast.sh` assembly contiguity using [QUAST](https://github.com/ablab/quast)
+2. `qsub busco.sh` assembly completeness using [BUSCO](https://busco.ezlab.org/) and the Ascomycota dataset
 
 ## 2. Mycobiont read filtering
 The following steps filter the metagenome to retrieve only the contigs belonging to the Lecanoromycete mycobiont.
 
 ### 2.1 BlobTools (round 1)
-Uses a DIAMOND blast of the contigs against the UniRef90 database which can be downloaded here (INSERT LINK) and a BLASTn against all Lecanoromycetes genomes in NCBI and three JGI Mycocosm genomes (Xanthoria parietina, Cladonia grayii and Usnea florida)
+Uses a DIAMOND blast of the contigs against the UniRef90 database which can be downloaded [here](https://ftp.expasy.org/databases/uniprot/current_release/uniref/uniref90/uniref90.fasta.gz)) and a BLASTn against all Lecanoromycetes genomes in NCBI and three JGI Mycocosm genomes ([Xanthoria parietina](https://mycocosm.jgi.doe.gov/Xanpa2/Xanpa2.home.html), [Cladonia grayii](https://mycocosm.jgi.doe.gov/Clagr3/Clagr3.home.html) and [Usnea florida](https://mycocosm.jgi.doe.gov/Usnflo1/Usnflo1.home.html))  
 `cd mycobiont_filtering/BlobTools`
-1. `qsub diamond.sh` DIAMOND blast against UniRef90
-2. `qsub blastn.sh` BLASTn against Lecanoromycete database
-3. `qsub bbmap.sh` calculates read coverage using BBTools bbmap function
+1. `qsub diamond.sh` [DIAMOND](https://github.com/bbuchfink/diamond) blast against UniRef90
+2. `qsub blastn.sh` [BLASTn](https://blast.ncbi.nlm.nih.gov/Blast.cgi) against Lecanoromycete database
+3. `qsub bbmap.sh` calculates read coverage using [BBTools](bbto) bbmap function
 4. `qsub taxlist_diamond.sh` link Uniref taxids number to taxa
-5. `qsub BlobTools.sh` uses BlobTools to visualise coverage, GC-content and blast results of contigs. Requires TAXONOMY file to taxify the output of blast and DIAMOND searches
+5. `qsub BlobTools.sh` uses [BlobTools](https://github.com/DRL/blobtools) to visualise coverage, GC-content and blast results of contigs. Requires TAXONOMY file to taxify the output of blast and DIAMOND searches
 
 ### 2.2 CONCOCT
 `cd mycobiont_filtering/CONCOCT`
-1. `qsub bwa_gatk.sh` align reads to contigs using (BWA-mem)[] and convert to .bam with (GATK)[]
-2. `qsub concoct.sh` bins metagenome contigs into MAGs
+1. `qsub bwa_gatk.sh` align reads to contigs using [BWA-mem](https://github.com/lh3/bwa) and convert to .bam with [GATK](https://gatk.broadinstitute.org/hc/en-us)
+2. `qsub concoct.sh` bins metagenome contigs into MAGs using [CONCOCT](https://github.com/BinPro/CONCOCT)
 3. `qsub make_cov_gc.sh` makes a coverage and gc_content file from the bbmap output to be used in the following step
 4. `Rscript concoct_mags_plot.r` visualises CONCOCT binning and BlobTools blasts to identify Ascomycota bins. Requires the 'clustering_merged.csv' file in the concoct_output
 5. `cat bin1.fa bin2.fa bin3.fa > Lecanoromycete_MAG.fa` merge potential mycobiont bins into a single file
 
 ### 2.3 Blobtools (round 2)
-The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the exact same scripts but replacing the metagenome assembly for `Lecanoromycete_MAG.fa` taking care to change the output file names so as not to overwrite the first round of BlobTools. The results can then be used to remove any remaining non-mycbiont reads as follows
+The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the exact same scripts but replacing the metagenome assembly for `Lecanoromycete_MAG.fa` taking care to change the output file names so as not to overwrite the first round of BlobTools. The results can then be used to remove any remaining non-mycbiont reads as follows  
 `cd mycobiont_filtering/BlobTools_round2`
 1. `qsub remove_contam.sh` extracts contig headers of contigs with a top blast of Ascomycota or 'no hit'. Requires the `.bestsum.table.txt` file from BlobTools
-2. `qsub seqkit_bbmap.sh` extract contigs based on headers file from previous step using SeqKit and then pulls reads which map to those contigs using bbmap
+2. `qsub seqkit_bbmap.sh` extract contigs based on headers file from previous step using [SeqKit](https://github.com/lh3/seqtk) and then pulls reads which map to those contigs using bbmap
 
 ### 2.4 Mycobiont assembly cleaning
 `cd mycobiont_filtering/cleaning`
-1. `qsub redundans.sh` uses redundans to remove redundant contifs, scaffold and close gaps
+1. `qsub redundans.sh` uses [redundans](https://github.com/lpryszcz/redundans) to remove redundant contifs, scaffold and close gaps
 
 ## 3. Annotation and orthology inference
 ### 3.1 Repeat Masking
 `cd annotation_orthology/repeat_masking`
-1. `qsub repeatmodeler.sh` generates repeat content library using RepeatModeler
-2. `qsub funnanotate_sort.sh` sorts contigs using funnanotate pipeline
-3. `qsub repeatmasker.sh` uses custom repeat library to softmask genome using RepeatMasker
+1. `qsub repeatmodeler.sh` generates repeat content library using [RepeatModeler](https://www.repeatmasker.org/RepeatModeler/)
+2. `qsub funnanotate_sort.sh` sorts contigs using [funnanotate](https://github.com/nextgenusfs/funannotate) pipeline
+3. `qsub repeatmasker.sh` uses custom repeat library to softmask genome using [RepeatMasker](https://www.repeatmasker.org/RepeatMasker/)
 
 ### 3.2 Gene Prediction
 `cd annotation_orthology/gene_prediction`
@@ -66,7 +66,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 ### 3.3 Orthology inference
 `cd annotation_orthology/orthology`
 1. `cp *_CONCOCT_genes_masked/predict_results/*proteins.fa formatted_proteomes_45T` copies all predicted proteomes to a new directory called `ormatted_proteomes_45T`
-2. `qsub orthofinder.sh` runs orthology inference using OrthoFinder
+2. `qsub orthofinder.sh` runs orthology inference using [OrthoFinder](https://github.com/davidemms/OrthoFinder)
 
 ## 4. Phylogenomics
 `cd phylogenomcis`
@@ -101,7 +101,7 @@ The following steps combine the PT domains from our anthraquinone PKSs with the 
 1. `qsub hmm_convert.sh` converts the Pfam seed alignment to an HMM file
 2. `qsub pull_anthraquinone_pks.sh` extract just anthraquinone PKSs from orthogroup of interest
 3. `qsub blastp.sh` extracts PT domains from PKSs using aptA Aspergillus PT domain as a query
-4. `qsub convert_2_fasta.sh` extract PT coordinates from blastp and convert to a fast file [bedtools]()
+4. `qsub convert_2_fasta.sh` extract PT coordinates from blastp and convert to a fast file [bedtools](https://bedtools.readthedocs.io/en/latest/)
 5. The above two steps are repeated for the Liu et al. (2015) sequences and then combined into a single file of PT domains with our putative anthraquinone PT domains called `OG_anth_Liu_PF14765.out`
 6. `qsub hmmalign.sh` uses (this)[https://github.com/reubwn/scripts/blob/master/hmmsearch-easy.pl] script from Reuben Nowell to align the PT domains to those in the Pfam seed alignment `PF14765_seed.txt`
 7. `qsub iqtree_hmmalign.sh` uses IQTree to build a ML tree from the clustal alignment
