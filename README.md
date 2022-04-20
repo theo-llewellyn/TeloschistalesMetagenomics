@@ -30,7 +30,8 @@ Uses a DIAMOND blast of the contigs against the UniRef90 database which can be d
 1. `qsub diamond.sh` DIAMOND blast against UniRef90
 2. `qsub blastn.sh` BLASTn against Lecanoromycete database
 3. `qsub bbmap.sh` calculates read coverage using BBTools bbmap function
-4. `qsub BlobTools.sh` uses BlobTools to visualise coverage, GC-content and blast results of contigs. Requires TAXONOMY file to taxify the output of blast and DIAMOND searches
+4. `qsub taxlist_diamond.sh` link Uniref taxids number to taxa
+5. `qsub BlobTools.sh` uses BlobTools to visualise coverage, GC-content and blast results of contigs. Requires TAXONOMY file to taxify the output of blast and DIAMOND searches
 
 ### 2.2 CONCOCT
 `cd mycobiont_filtering/CONCOCT`
