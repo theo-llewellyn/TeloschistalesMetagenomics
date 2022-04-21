@@ -98,7 +98,7 @@ Once anthraquinone BGCFs have been identified from BiG-SCAPE output the orthofin
 The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3). The orthogroup of interest may also contain non-anthraqunone PKSs, therefore we need to make a note of which ones are putative anthraquinone PKSs by hovering over the relevant PKSs in the BiG-SCAPE PKSI html file. The names of the putative anthraquinone PKSs need to be saved into a file called `OG_anthraquinone_headers.txt`
 
 `cd anthraquinones/hmmalign`
-1. `qsub hmm_convert.sh` converts the Pfam seed alignment to an HMM file using hmmbuilf function of [hmmer](https://github.com/EddyRivasLab/hmmer)
+1. `qsub hmm_convert.sh` converts the Pfam seed alignment to an HMM file using hmmbuild function of [hmmer](https://github.com/EddyRivasLab/hmmer)
 2. `qsub pull_anthraquinone_pks.sh` extract just anthraquinone PKSs from orthogroup of interest
 3. `qsub blastp.sh` extracts PT domains from PKSs using the aptA Aspergillus PT domain from [Szewczyk et al. (2008)](https://doi.org/10.1128/AEM.01743-08) (downloaded from [here](https://www.uniprot.org/uniprot/Q5B0D0) as a query using BLASTp
 4. `qsub convert_2_fasta.sh` extract PT coordinates from blastp and convert to a fast file [bedtools](https://bedtools.readthedocs.io/en/latest/)
