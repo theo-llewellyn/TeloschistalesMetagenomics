@@ -81,7 +81,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 ## 5. Secondary metabolite biosynthetic gene cluster (BGC) analysis
 `cd SMGC_analysis`
 1. `qsub antismash.sh` predicts BGCs from funnanotate predictions using [antismash](https://github.com/antismash/antismash)
-2. `qsub edit_antismash_gbks.sh` edits the antismash .gbk files so that each one includes the name of the genome it came from. This prevent identical named files from being removed in the next stage
+2. `qsub edit_antismash_gbks.sh` edits the antismash .gbk files so that each one includes the name of the genome it came from. This prevents identical named files from being removed in the next stage
 3. `cp *.gbk antismash_Leca45T_gbks` copies renamed .gbks from all genomes into a new directory
 4. `qsub bigscape.sh` identifies BGC families using [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE)
 5. `Rscript BGC_cluster_analysis.r` Mantel tests and PCoA of BGC data in R. Requires a rooted version of the ML Tree produced in section 4
