@@ -49,7 +49,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 
 ### 2.4 Mycobiont assembly cleaning
 `cd mycobiont_filtering/cleaning`
-1. `qsub redundans.sh` uses [redundans](https://github.com/lpryszcz/redundans) to remove redundant contifs, scaffold and close gaps
+1. `qsub redundans.sh` uses [redundans](https://github.com/lpryszcz/redundans) to remove redundant contigs, scaffold and close gaps
 
 ## 3. Annotation and orthology inference
 ### 3.1 Repeat Masking
