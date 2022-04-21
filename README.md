@@ -88,7 +88,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 
 ## 6. Anthraquinone BGC analysis
 ### 6.1 Functional annotation
-Once anthraquinone BGCFs have been identified from BiG-SCAPE output the orthofinder orthogroup to which those PKSs belong can be further characterised.
+Once anthraquinone BGCFs have been identified from BiG-SCAPE output the orthofinder orthogroup to which those PKSs belong can be further characterised.  
 `cd anthraquinones/functional_annotation`
 1. `sed 's/*//g' orthogroup.fa > file_noasterisk.fa` removes any asterisks from orthgroup file as these can't be read by Interpro
 2. `qsub interproscan.sh` functional annotation of orthogroup using [InterProScan](https://www.ebi.ac.uk/interpro/about/interproscan/)
