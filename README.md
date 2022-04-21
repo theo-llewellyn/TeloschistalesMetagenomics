@@ -72,7 +72,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 `cd phylogenomcis`
 1. `Rscript Orthogroups_75percent.R` uses the `Orthogroups.GeneCount.tsv` file from OrthoFinder to extract a list of single copy orthologues present in at least 75% of taxa
 2. `qsub extract_75_orthogroups.sh` pull 75% orthogroups and copy to new directory
-3. `qsub mafft_trimAL_loop.sh` uses [MAFFT](https://mafft.cbrc.jp/alignment/software/) to align each orthogroup and [TrimAL](http://trimal.cgenomics.org/) to remove ambiguous regions
+3. `qsub mafft_trimAL_loop.sh` uses [MAFFT](https://mafft.cbrc.jp/alignment/software/) to align each orthogroup and [TrimAl](http://trimal.cgenomics.org/) to remove ambiguous regions
 4. `qsub edit_protein_headers.sh` removes trailing information on protein headers so that only the species name remains. This is needed in order for tree building tools to recognise which sequences belong to the same genome
 5. `qsub iqtree.sh` produces a concatenated maximum likelihood tree from all orthgroups alignments and also individual orthogroup 'gene trees' for each orthogroup separately using [IQ-Tree](https://github.com/iqtree/iqtree2)
 6. `qsub iqtree_gfc.sh` calculates gene- and site-concordance factors using IQTree
