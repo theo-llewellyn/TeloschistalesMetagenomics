@@ -100,7 +100,7 @@ The following steps combine the PT domains from our anthraquinone PKSs with the 
 `cd anthraquinones/hmmalign`
 1. `qsub hmm_convert.sh` converts the Pfam seed alignment to an HMM file using hmmbuild function of [hmmer](https://github.com/EddyRivasLab/hmmer)
 2. `qsub pull_anthraquinone_pks.sh` extract just anthraquinone PKSs from orthogroup of interest
-3. `qsub blastp.sh` extracts PT domains from PKSs using the aptA Aspergillus PT domain from [Szewczyk et al. (2008)](https://doi.org/10.1128/AEM.01743-08) (downloaded from [here](https://www.uniprot.org/uniprot/Q5B0D0) as a query using BLASTp
+3. `qsub blastp.sh` extracts PT domains from PKSs using the aptA Aspergillus PT domain from [Szewczyk et al. (2008)](https://doi.org/10.1128/AEM.01743-08) (downloaded from [here](https://www.uniprot.org/uniprot/Q5B0D0)) as a query using BLASTp
 4. `qsub convert_2_fasta.sh` extract PT coordinates from blastp and convert to a fast file [bedtools](https://bedtools.readthedocs.io/en/latest/)
 5. The above two steps are repeated for the [Liu et al. (2015)](https://doi.org/10.1038/srep10463) sequences and then combined into a single file of PT domains with our putative anthraquinone PT domains called `OG_anth_Liu_PF14765.out`
 6. `qsub hmmalign.sh` uses [this](https://github.com/reubwn/scripts/blob/master/hmmsearch-easy.pl) script from Reuben Nowell to align the PT domains to those in the Pfam seed alignment `PF14765_seed.txt`
