@@ -45,7 +45,7 @@ Uses a DIAMOND blast of the contigs against the UniRef90 database which can be d
 The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the exact same scripts but replacing the metagenome assembly for `Lecanoromycete_MAG.fa` taking care to change the output file names so as not to overwrite the first round of BlobTools. The results can then be used to remove any remaining non-mycbiont reads as follows  
 `cd mycobiont_filtering/BlobTools_round2`
 1. `qsub remove_contam.sh` extracts contig headers of contigs with a top blast of Ascomycota or 'no hit'. Requires the `.bestsum.table.txt` file from BlobTools
-2. `qsub seqkit_bbmap.sh` extract contigs based on headers file from previous step using [SeqKit](https://github.com/lh3/seqtk) and then pulls reads which map to those contigs using bbmap
+2. `qsub seqkit_bbmap.sh` extract contigs based on headers file from previous step using [SeqKit](https://bioinf.shenwei.me/seqkit/) and then pulls reads which map to those contigs using bbmap
 
 ### 2.4 Mycobiont assembly cleaning
 `cd mycobiont_filtering/cleaning`
