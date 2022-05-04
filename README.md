@@ -85,7 +85,7 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 3. `cp *.gbk antismash_Leca45T_gbks` copies renamed .gbks from all genomes into a new directory
 4. `qsub bigscape.sh` identifies BGC families using [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE)
 5. `Rscript BGC_cluster_analysis.r` Mantel tests and PCoA of BGC data in R. Requires a rooted version of the ML Tree produced in section 4. Also produces a presence-absence matrix and tree file for the subsequent step
-6. `qsub phylogeny_pca.sh` calculates phylogenetic distance matrix based on a phylogeny, runs a PCA of said matrix. Also runs a PERMANOVA but these files are not used for our analyses. Requires an edited version of python script from Mesny and Vannier (2020) https://github.com/fantin-mesny/Effect-Of-Biological-Categories-On-Genomes-Composition produced by R. Hill (https://github.com/Rowena-h/FusariumLifestyles/tree/main/lifestyle_comparison).
+6. `qsub phylogeny_pca.sh` calculates phylogenetic distance matrix based on a phylogeny, runs a PCA of said matrix. Also runs a PERMANOVA but these files are not used for our analyses. Requires an edited version of python script from [Mesny and Vannier (2020)](https://github.com/fantin-mesny/Effect-Of-Biological-Categories-On-Genomes-Composition) produced by [R. Hill](https://github.com/Rowena-h/FusariumLifestyles/tree/main/lifestyle_comparison).
 7. `Rscript permanova.r` runs a PERMANOVA using the first two Principal Components from the phylogenetic distance PCA above and the BGCF distance matrix.
 
 ## 6. Anthraquinone BGC analysis
