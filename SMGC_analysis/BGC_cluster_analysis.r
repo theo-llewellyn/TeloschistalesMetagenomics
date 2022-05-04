@@ -48,7 +48,6 @@ filtered_bgcs <- mutate(filtered_bgcs, Description=recode(Description,
                                                           "Us_hak" = "Usnea hakonensis",
                                                           "Usnflo" = "Usnea florida",
                                                           "Xanthoria sp" = "Xanthoria sp.",
-                                                          "Xanthoria sp_2" = "Xanthoria sp. (2)",
                                                           "Xanpa" = "Xanthoria parietina",
                                                           "Caloplaca aegaea" = "Caloplaca aegea",
                                                           "Usnochroma carphineum" = "Usnochroma carphinea")) 
@@ -88,18 +87,8 @@ all_bgcs_linked[,c(2,4)] %>% add_column(presence = 1) %>%
               values_fill = 0) %>%
   column_to_rownames(var="Description") -> dissimilarity_input
 
-pco1 <- wcmdscale(vegdist(dissimilarity_input), eig = TRUE)
+pco1 <- wcmdscale(vegdist(dissimilarity_input, method = "jaccard"), eig = TRUE)
 round(eigenvals(pco1),3)
-
-#with transformation
-pco2 <- wcmdscale(vegdist(dissimilarity_input), eig = TRUE, add = "lingoes")
-round(eigenvals(pco2),3)
-
-
-families <- as.factor(c("Parmeliaceae","Parmeliaceae","Parmeliaceae","Parmeliaceae","Letrouitiaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Umbilicariaceae","Umbilicariaceae","Cladoniaceae","Cladoniaceae","Cladoniaceae","Cladoniaceae","Cladoniaceae","Teloschistaceae","Teloschistaceae","Ramalinaceae","Ramalinaceae", "Umbilicariaceae","Parmeliaceae","Letrouitiaceae","Letrouitiaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Graphidaceae","Teloschistaceae","Stictidaceae","Parmeliaceae","Parmeliaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Teloschistaceae","Umbilicariaceae"))
-col_vec <- c("#5d6941","black","#d99627","#96adcb","#d1d7b3","pink","#a74207", "#666f6e")
-cols <- col_vec[families]
-lvl <- levels(families)
 
 orders <- as.factor(c("Lecanorales","Lecanorales","Lecanorales","Lecanorales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Umbilicariales","Umbilicariales","Lecanorales","Lecanorales","Lecanorales","Lecanorales","Lecanorales","Teloschistales","Teloschistales","Lecanorales","Lecanorales", "Umbilicariales","Lecanorales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Ostropales","Teloschistales","Ostropales","Lecanorales","Lecanorales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Umbilicariales"))
 
@@ -152,14 +141,25 @@ dev.off()
 iqtree <- read.tree("IQTree_Leca45T_75p_round2/concord_Leca45T_tAl_concat.renamed.rooted.tree")
 
 #edit tip labels to match matrix
-iqtree$tip.label <- c("Cyanodermella asteris","Diploschistes diacapsis","Lasallia pustulata","Lasallia hispanica","Umbilicaria vellea","Umbilicaria muehlenbergii","Caloplaca aegea","Variospora aurantia","Seirophora lacunosa","Seirophora lacunosa_2", "Seirophora villosa","Caloplaca aetnensis","Caloplaca ligustica","Usnochroma carphinea","Gyalolechia ehrenbergii","Gyalolechia flavorubescens","Letrouitia leprolyta","Flavoplaca oasis","Rusavskia elegans","Xanthoria sp.","Xanthoria sp. (2)","Xanthoria aureola","Xanthoria mediterranea","Xanthoria steineri","Xanthoria parietina","Xanthomendoza fulva","Teloschistes chrysophthalmus","Teloschistes peruviana","Teloschistes flavicans","Letrouitia transgressa_93","Letrouitia transgressa_94","Ramalina intermedia","Ramalina peruviana","Cladonia macilenta","Cladonia metacorallifera","Cladonia rangiferina","Cladonia uncialis","Cladonia grayii","Usnea hakonensis","Usnea florida","Alectoria sarmentosa","Evernia prunastri","Pseudevernia furfuracea","Letharia columbiana","Letharia lupina")
-
+#edit tip labels to match matrix
+iqtree$tip.label <- c("Cyanodermella asteris","Diploschistes diacapsis","Lasallia pustulata","Lasallia hispanica","Umbilicaria vellea","Umbilicaria muehlenbergii","Caloplaca aegea","Variospora aurantia","Seirophora lacunosa","Seirophora lacunosa_2", "Seirophora villosa","Caloplaca aetnensis","Caloplaca ligustica","Usnochroma carphinea","Gyalolechia ehrenbergii","Gyalolechia flavorubescens","Letrouitia leprolyta","Flavoplaca oasis","Rusavskia elegans","Xanthoria sp.","Xanthoria sp_2","Xanthoria aureola","Xanthoria mediterranea","Xanthoria steineri","Xanthoria parietina","Xanthomendoza fulva","Teloschistes chrysophthalmus","Teloschistes peruviana","Teloschistes flavicans","Letrouitia transgressa_93","Letrouitia transgressa_94","Ramalina intermedia","Ramalina peruviana","Cladonia macilenta","Cladonia metacorallifera","Cladonia rangiferina","Cladonia uncialis","Cladonia grayii","Usnea hakonensis","Usnea florida","Alectoria sarmentosa","Evernia prunastri","Pseudevernia furfuracea","Letharia columbiana","Letharia lupina")
 #convert tree to phylogenetic distance matrix
 phylo_dist <- cophenetic.phylo(iqtree)
 
 #convert BGCF matrix into distance matrix using squared euclid distance based on Harmon and Glor
-bgcf_dist_Gower <- vegdist(dissimilarity_input, method = "gower")
+bgcf_dist_Gower <- vegdist(dissimilarity_input, method = "jaccard")
 
 #mantel test
 mantel_test_gower <- mantel(phylo_dist, bgcf_dist_Gower)
 mantel_test_gower
+
+#prepare input files for Mesny and Vannier
+presence_absence_ordered <- match.phylo.data(iqtree, presence_absence)
+presence_absence_ordered_df <- presence_absence_ordered$data
+presence_absence_ordered_df$genome <- rownames(presence_absence_ordered_df)
+presence_absence_ordered_df$genome <- gsub(" ", "_", presence_absence_ordered_df$genome)
+presence_absence_ordered_df$lifestyle <- as.factor(c(rep("Ostropales",2),rep("Umbilicariales",4),rep("Teloschistales",25),rep("Lecanorales",14)))
+presence_absence_ordered_df <- tibble(presence_absence_ordered_df) %>% dplyr::select(genome, lifestyle, everything())
+
+write.csv(presence_absence_ordered_df, "BGCF-presenceabsence.csv", row.names=FALSE, quote=FALSE)
+write.tree(iqtree, "concord_Leca45T_tAl_concat.renamed.rooted.tre")
