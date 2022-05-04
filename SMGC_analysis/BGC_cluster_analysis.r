@@ -1,25 +1,27 @@
 ###################################################
 # Code to run BGC clustering analysis             #
 # with NEW macrogen genomes (45 taxa)             #
+# does PCoA, Mantel test and PERMANOVA            #
 # Author: Theo Llewellyn                          #
 ###################################################
 
+library(EcoSimR)
+library(vegan)
+library(permute)
+library(ape)
 library(tidyr)
 library(dplyr)
 library(readr)
-library(ggplot2)
 library(tibble)
-library(vegan)
-library(fpc)
-library(cluster)
-library(factoextra)
 library(phylobase)
 library(adephylo)
 library(phytools)
+library(picante)
 
+setwd("~/The Royal Botanic Gardens, Kew/Teloschistales - Documents/0_THEO_LLEWELLYN_PHD/03_RESULTS")
 
 #load in data
-bgcs <- read.table("BigScape_c0.4_1_clansoff_Leca45T_output/Network_Annotations_Full.tsv", sep = "\t", header = TRUE, fill  = TRUE)
+bgcs <- read.table("BIGSCAPE/BigScape_c0.42_.48_clansoff_Leca45T_round2_output/Network_Annotations_Full.tsv", sep = "\t", header = TRUE, fill  = TRUE)
 
 #remove the MIBiG clusters
 bgcs %>% filter(!grepl('BGC', BGC)) -> filtered_bgcs
@@ -53,12 +55,12 @@ filtered_bgcs <- mutate(filtered_bgcs, Description=recode(Description,
                                                           "Usnochroma carphineum" = "Usnochroma carphinea")) 
 
 #load in data
-pks1_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/PKSI_clustering_c0.46.tsv")
-nrps_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/NRPS_clustering_c0.46.tsv")
-pks_nrp_hybrids <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/PKS-NRP_Hybrids_clustering_c0.46.tsv")
-pks_other_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/PKSother_clustering_c0.46.tsv")
-Terpene_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/Terpene_clustering_c0.46.tsv")
-Other_clusters <- read_tsv("BigScape_c0.4_1_clansoff_Leca45T_output/Others_clustering_c0.46.tsv")
+pks1_clusters <- read_tsv("BIGSCAPE/BigScape_c0.42_.48_clansoff_Leca45T_round2_output/PKSI_clustering_c0.46.tsv")
+nrps_clusters <- read_tsv("BIGSCAPE/BigScape_c0.42_.48_clansoff_Leca45T_round2_output/NRPS_clustering_c0.46.tsv")
+pks_nrp_hybrids <- read_tsv("BIGSCAPE/BigScape_c0.42_.48_clansoff_Leca45T_round2_output/PKS-NRP_Hybrids_clustering_c0.46.tsv")
+pks_other_clusters <- read_tsv("BIGSCAPE/BigScape_c0.42_.48_clansoff_Leca45T_round2_output/PKSother_clustering_c0.46.tsv")
+Terpene_clusters <- read_tsv("BIGSCAPE/BigScape_c0.42_.48_clansoff_Leca45T_round2_output/Terpene_clustering_c0.46.tsv")
+Other_clusters <- read_tsv("BIGSCAPE/BigScape_c0.42_.48_clansoff_Leca45T_round2_output/Others_clustering_c0.46.tsv")
 
 #change colname
 pks1_clusters <- rename(pks1_clusters, BGC = `#BGC Name`, Family.Number = `Family Number`)
@@ -78,19 +80,29 @@ detach("package:plyr", unload = TRUE)
 #link tbls by BGC column, the nrows drops as it removes any clusters from MiBig
 all_bgcs_linked <- inner_join(x = all_bgc_clusters, y = filtered_bgcs)
 
-
-##### VEGAN PCoA
+#make into dissimilarity matrix
 all_bgcs_linked[,c(2,4)] %>% add_column(presence = 1) %>% 
   pivot_wider(names_from = Family.Number,
               values_from = presence,
               values_fn = list(presence = mean),
               values_fill = 0) %>%
-  column_to_rownames(var="Description") -> dissimilarity_input
+  column_to_rownames(var="Description") -> presence_absence
 
-pco1 <- wcmdscale(vegdist(dissimilarity_input, method = "jaccard"), eig = TRUE)
+
+#read tree
+iqtree <- read.tree("PHYLOGENOMICS/IQTree_Leca45T_75p_round2/concord_Leca45T_tAl_concat.renamed.rooted.tree")
+
+#edit tip labels to match matrix
+iqtree$tip.label <- c("Cyanodermella asteris","Diploschistes diacapsis","Lasallia pustulata","Lasallia hispanica","Umbilicaria vellea","Umbilicaria muehlenbergii","Caloplaca aegea","Variospora aurantia","Seirophora lacunosa","Seirophora lacunosa_2", "Seirophora villosa","Caloplaca aetnensis","Caloplaca ligustica","Usnochroma carphinea","Gyalolechia ehrenbergii","Gyalolechia flavorubescens","Letrouitia leprolyta","Flavoplaca oasis","Rusavskia elegans","Xanthoria sp.","Xanthoria sp_2","Xanthoria aureola","Xanthoria mediterranea","Xanthoria steineri","Xanthoria parietina","Xanthomendoza fulva","Teloschistes chrysophthalmus","Teloschistes peruviana","Teloschistes flavicans","Letrouitia transgressa_93","Letrouitia transgressa_94","Ramalina intermedia","Ramalina peruviana","Cladonia macilenta","Cladonia metacorallifera","Cladonia rangiferina","Cladonia uncialis","Cladonia grayii","Usnea hakonensis","Usnea florida","Alectoria sarmentosa","Evernia prunastri","Pseudevernia furfuracea","Letharia columbiana","Letharia lupina")
+
+presence_absence_ordered <- match.phylo.data(iqtree, presence_absence)
+presence_absence_ordered_df <- presence_absence_ordered$data
+
+##### PCoA
+pco1 <- wcmdscale(vegdist(presence_absence_ordered_df, method = "jaccard"), eig = TRUE)
 round(eigenvals(pco1),3)
 
-orders <- as.factor(c("Lecanorales","Lecanorales","Lecanorales","Lecanorales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Umbilicariales","Umbilicariales","Lecanorales","Lecanorales","Lecanorales","Lecanorales","Lecanorales","Teloschistales","Teloschistales","Lecanorales","Lecanorales", "Umbilicariales","Lecanorales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Ostropales","Teloschistales","Ostropales","Lecanorales","Lecanorales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Teloschistales","Umbilicariales"))
+orders <- as.factor(c(rep("Ostropales",2),rep("Umbilicariales",4),rep("Teloschistales",25),rep("Lecanorales",14)))
 
 col_vec1 <- c("#96adcb","pink","#d99627", "#666f6e")
 cols1 <- col_vec1[orders]
@@ -98,7 +110,7 @@ lvl1 <- levels(orders)
 
 set.seed(2308)
 #plot just points
-pdf("BGC_Leca45T_PCoA_wEllipse_2022.pdf", height = 5.5, width = 5.5)
+pdf("FIGURES/BGC_Leca45T_PCoA_wEllipse_2022.pdf", height = 5.5, width = 5.5)
 par(mar = c(4, 4, 1, 1)) 
 plot(pco1$points, type = "n",
      scaling = "symmetric",
@@ -132,34 +144,24 @@ PCoA_plot
 
 dev.off()
 
-png("BGC_Leca45T_PCoA_wEllipse_2022.png", res = 300, width = 2000, height = 2000)
-PCoA_plot
-dev.off()
+##### MANTEL TEST
+#convert BGC matrix to distance
+bgcf_dist <- vegdist(presence_absence_ordered_df, method = "jaccard")
+distMatrix <- as.data.frame(as.matrix(bgcf_dist))
 
-### Mantel tests
-#read tree
-iqtree <- read.tree("IQTree_Leca45T_75p_round2/concord_Leca45T_tAl_concat.renamed.rooted.tree")
-
-#edit tip labels to match matrix
-#edit tip labels to match matrix
-iqtree$tip.label <- c("Cyanodermella asteris","Diploschistes diacapsis","Lasallia pustulata","Lasallia hispanica","Umbilicaria vellea","Umbilicaria muehlenbergii","Caloplaca aegea","Variospora aurantia","Seirophora lacunosa","Seirophora lacunosa_2", "Seirophora villosa","Caloplaca aetnensis","Caloplaca ligustica","Usnochroma carphinea","Gyalolechia ehrenbergii","Gyalolechia flavorubescens","Letrouitia leprolyta","Flavoplaca oasis","Rusavskia elegans","Xanthoria sp.","Xanthoria sp_2","Xanthoria aureola","Xanthoria mediterranea","Xanthoria steineri","Xanthoria parietina","Xanthomendoza fulva","Teloschistes chrysophthalmus","Teloschistes peruviana","Teloschistes flavicans","Letrouitia transgressa_93","Letrouitia transgressa_94","Ramalina intermedia","Ramalina peruviana","Cladonia macilenta","Cladonia metacorallifera","Cladonia rangiferina","Cladonia uncialis","Cladonia grayii","Usnea hakonensis","Usnea florida","Alectoria sarmentosa","Evernia prunastri","Pseudevernia furfuracea","Letharia columbiana","Letharia lupina")
 #convert tree to phylogenetic distance matrix
 phylo_dist <- cophenetic.phylo(iqtree)
 
-#convert BGCF matrix into distance matrix using squared euclid distance based on Harmon and Glor
-bgcf_dist_Gower <- vegdist(dissimilarity_input, method = "jaccard")
+#run mantel test
+mantel_test <- mantel(phylo_dist, bgcf_dist)
+mantel_test
 
-#mantel test
-mantel_test_gower <- mantel(phylo_dist, bgcf_dist_Gower)
-mantel_test_gower
+#### PERMANOVA
 
-#prepare input files for Mesny and Vannier
-presence_absence_ordered <- match.phylo.data(iqtree, presence_absence)
-presence_absence_ordered_df <- presence_absence_ordered$data
+#prepare input for python script
 presence_absence_ordered_df$genome <- rownames(presence_absence_ordered_df)
 presence_absence_ordered_df$genome <- gsub(" ", "_", presence_absence_ordered_df$genome)
 presence_absence_ordered_df$lifestyle <- as.factor(c(rep("Ostropales",2),rep("Umbilicariales",4),rep("Teloschistales",25),rep("Lecanorales",14)))
 presence_absence_ordered_df <- tibble(presence_absence_ordered_df) %>% dplyr::select(genome, lifestyle, everything())
-
 write.csv(presence_absence_ordered_df, "BGCF-presenceabsence.csv", row.names=FALSE, quote=FALSE)
 write.tree(iqtree, "concord_Leca45T_tAl_concat.renamed.rooted.tre")
