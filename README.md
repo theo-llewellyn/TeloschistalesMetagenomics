@@ -84,7 +84,9 @@ The `Lecanoromycete_MAG.fa` can then be run through the steps in 2.1 using the e
 2. `qsub edit_antismash_gbks.sh` edits the antismash .gbk files so that each one includes the name of the genome it came from. This prevents identical named files from being removed in the next stage
 3. `cp *.gbk antismash_Leca45T_gbks` copies renamed .gbks from all genomes into a new directory
 4. `qsub bigscape.sh` identifies BGC families using [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE)
-5. `Rscript BGC_cluster_analysis.r` Mantel tests and PCoA of BGC data in R. Requires a rooted version of the ML Tree produced in section 4
+5. `Rscript BGC_cluster_analysis.r` Mantel tests and PCoA of BGC data in R. Requires a rooted version of the ML Tree produced in section 4. Also produces a presence-absence matrix and tree file for the subsequent step
+6. `qsub permanova.sh` calculates phylogenetic distance matrix based on a phylogeny, runs a PCA of said matrix. Also runs a PERMANOVA but these files are not used for our analyses.
+7. `Rscript permanova.r` runs a PERMANOVA using the first two Principal Components from the phylogenetic distance PCA and the BGCF distance matrix.
 
 ## 6. Anthraquinone BGC analysis
 ### 6.1 Functional annotation
