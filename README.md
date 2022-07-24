@@ -54,8 +54,8 @@ The `Lecanoromycete_MAG.fa` can then either be run through the steps in 2.1 usin
 ## 3. Annotation and orthology inference
 ### 3.1 Repeat Masking
 `cd annotation_orthology/repeat_masking`
-1. `qsub repeatmodeler.sh` generates repeat content library using [RepeatModeler](https://www.repeatmasker.org/RepeatModeler/)
-2. `qsub funnanotate_sort.sh` sorts contigs using [funnanotate](https://github.com/nextgenusfs/funannotate) pipeline
+1. `qsub funnanotate_sort.sh` sorts contigs using [funnanotate](https://github.com/nextgenusfs/funannotate) pipeline
+2. `qsub repeatmodeler.sh` generates repeat content library using [RepeatModeler](https://www.repeatmasker.org/RepeatModeler/)
 3. `qsub repeatmasker.sh` uses custom repeat library to softmask genome using [RepeatMasker](https://www.repeatmasker.org/RepeatMasker/)
 
 ### 3.2 Gene Prediction
