@@ -96,6 +96,14 @@ Once anthraquinone BGCFs have been identified from BiG-SCAPE output the orthofin
 2. `qsub interproscan.sh` functional annotation of orthogroup using [InterProScan](https://www.ebi.ac.uk/interpro/about/interproscan/)
 3. `qsub extract_PANTHER.sh` extract PANTHER annotations from interpro output
 
+### 6.2 Anthraquinone PKS gene tree reconstruction
+The following steps produce a maximum likelihood gene tree for the anthraquinone PKS1 genes and their homologues identified in step 6.1.
+`cd anthraquinones/gene_tree`
+1. `qsub guidance2.sh` aligns the amino acid sequences using mafft and then identifies which sequences are ambiguosly aligned
+2. `qsub guidance2_round2.sh` reruns mafft alignment this time with the ambiguous sequences removed
+3. `qsub pal2nal.sh` converts aa alignment to nucleotides
+4. `qsub raxml-ng.sh` performs ML tree search and bootstrapping. Also tests for BS convergence
+
 ### 6.2 PT domain analysis
 The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3). The orthogroup of interest may also contain non-anthraqunone PKSs, therefore we need to make a note of which ones are putative anthraquinone PKSs by hovering over the relevant PKSs in the BiG-SCAPE PKSI html file. The names of the putative anthraquinone PKSs need to be saved into a file called `OG_anthraquinone_headers.txt`
 
