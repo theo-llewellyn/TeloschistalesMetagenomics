@@ -101,8 +101,9 @@ The following steps produce a maximum likelihood gene tree for the anthraquinone
 `cd anthraquinones/gene_tree`
 1. `qsub guidance2.sh` aligns the amino acid sequences using mafft and then identifies which sequences are ambiguosly aligned
 2. `qsub guidance2_round2.sh` reruns mafft alignment this time with the ambiguous sequences removed
-3. `qsub pal2nal.sh` converts aa alignment to nucleotides
-4. `qsub raxml-ng.sh` performs ML tree search and bootstrapping. Also tests for BS convergence
+3. `qsub pull_CDS_seqs.sh` pulls the CDS sequences for that orthogroup from the funnanotate CDS files from all genomes
+4. `qsub pal2nal.sh` converts aa alignment to nucleotides using CDS sequences
+5. `qsub raxml-ng.sh` performs ML tree search and bootstrapping. Also tests for BS convergence
 
 ### 6.2 PT domain analysis
 The following steps combine the PT domains from our anthraquinone PKSs with the Pfam seed alignment for that domain which can be downloaded [here](https://pfam.xfam.org/family/PF14765#tabview=tab3). The orthogroup of interest may also contain non-anthraqunone PKSs, therefore we need to make a note of which ones are putative anthraquinone PKSs by hovering over the relevant PKSs in the BiG-SCAPE PKSI html file. The names of the putative anthraquinone PKSs need to be saved into a file called `OG_anthraquinone_headers.txt`
