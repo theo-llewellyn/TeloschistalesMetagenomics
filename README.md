@@ -1,5 +1,5 @@
 # *Teloschistales* Metagenomics
-Bioinformatic scripts/code for Llewellyn et al. (2022) Metagenomics shines light on the evolution of 'sunscreen' pigments in the *Teloschistales* (lichen-forming Ascomycota) (in prep.)
+Bioinformatic scripts/code for Llewellyn et al. (2023) Metagenomics shines light on the evolution of 'sunscreen' pigments in the *Teloschistales* (lichen-forming Ascomycota) (in prep.)
 
 All scripts (except .R scripts) were run on the Imperial College London High Performance Computer. This HPC uses the PBS queueing system, therefore core/RAM/runtimes in .sh scripts are specified in PBS format. All scripts are written for a single genome file (replacing the word ACCESSION for the name of the sequence) but can be converted into array scripts to handle multiple genomes.
 
